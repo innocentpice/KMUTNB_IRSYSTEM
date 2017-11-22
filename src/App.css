@@ -1,0 +1,11 @@
+@import '~normalize.css/normalize.css';
+
+body,
+html,
+#root,
+.App {
+    margin: 0px;
+    padding: 0px;
+    background-color: #fafafa;
+    height: 100%;
+}
