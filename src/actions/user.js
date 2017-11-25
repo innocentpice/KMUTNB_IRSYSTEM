@@ -12,7 +12,12 @@ export const getUsers = (uid) =>{
             dispatch({
                 type: USER_GETALL,
                 payload: _.map(snap.val(),(snap,key)=>{
-                    return {key: key, text: snap.email, value: key};
+                    return {
+                        key: key, 
+                        text: snap.email, 
+                        value: key,
+                        image: { avatar: true, src: 'http://i.pravatar.cc/150?u=' + snap.email }
+                    };
                 })
             });
         });

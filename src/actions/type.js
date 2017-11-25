@@ -12,3 +12,5 @@ export const AUTH_SIGNUP = 'AUTH_SIGNUP';
 export const AUTH_LOGIN = 'AUTH_LOGIN';
 export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const AUTH_CHECK = 'AUTH_CHECK';
+
+export const COURSE_GETALL = 'COURSE_GETALL';

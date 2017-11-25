@@ -1,21 +1,61 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash';
 
-import { Header, Divider, Item, Form, Button, Select } from 'semantic-ui-react'
+import { Header, Divider, Form, Button, Select, Comment, Icon } from 'semantic-ui-react'
 
 import { chatSelect,chatPush } from '../actions';
 
-const Chatitem = ({ poster, msg, time }) =>
-    <Item>
-      <Item.Content>
-        <Item.Header as='a'>{poster} : {msg}</Item.Header>
-        <Item.Meta>
-          <span className='cinema'>{new Date(time).toLocaleString()}</span>
-        </Item.Meta>
-      </Item.Content>
-    </Item>;
+const Chatitem = ({ poster, msg, time, me = false }) =>{
+    
+    if(me){
+        return(
+            <Comment 
+                style={{
+                    padding: '1em', 
+                    margin: '0.5em', 
+                    borderRadius: '1em',
+                    backgroundColor: '#fff',
+                    textAlign: 'right',
+                    float: 'right',
+                    maxWidth: '70%',
+                    clear: 'both'
+                }}
+            >
+              <Comment.Content>
+                <Comment.Metadata style={{margin: 0}}>
+                  <div>{moment(time).calendar()}</div>
+                </Comment.Metadata>
+                <Comment.Text>{msg}</Comment.Text>
+              </Comment.Content>
+            </Comment>    
+        );
+    }
+    
+    return(
+        <Comment 
+            style={{
+                padding: '1em', 
+                margin: '0.5em', 
+                borderRadius: '1em',
+                backgroundColor: '#fff',
+                maxWidth: '70%',
+                clear: 'both'
+            }}
+        >
+          <Comment.Avatar src={'http://i.pravatar.cc/150?u='+poster} />
+          <Comment.Content>
+            <Comment.Metadata style={{margin: 0}}>
+              <div>{moment(time).calendar()}</div>
+            </Comment.Metadata>
+            <Comment.Text>{msg}</Comment.Text>
+          </Comment.Content>
+        </Comment>
+    );
+}
 
 class ChatRoom extends Component {
 
@@ -29,18 +69,20 @@ class ChatRoom extends Component {
         }
     }
 
+    componentDidMount() {
+        const { scrollbars } = this.refs;
+        scrollbars && scrollbars.scrollToBottom();
+    }
     componentDidUpdate() {
-        const obj = document.getElementById('ChatBox');
-        if(obj){
-            obj.scrollTop = obj.scrollHeight;
-        }
+        const { scrollbars } = this.refs;
+        scrollbars && scrollbars.scrollToBottom();
     }
 
     render() {
         return (
             <div>
                 <Header>
-                    ChatRoom
+                    ChatRoom <Icon name='chat' />
                 </Header>
                 <Form>
                     <Form.Field 
@@ -51,7 +93,7 @@ class ChatRoom extends Component {
                                 return n.key !== this.props.auth.uid;
                             })
                         } 
-                        placeholder='Select User' 
+                        placeholder={this.props.chats.matename ? this.props.chats.matename : 'SELECT USER'} 
                         required 
                         search={true}
                         onChange={(e, { value}) => {
@@ -67,13 +109,21 @@ class ChatRoom extends Component {
                 {
                     this.props.chats.roomkey &&
                     <div>
-                        <Item.Group id={'ChatBox'} divided style={{maxHeight: '20em', overflowY: 'scroll'}}>
+                        <Scrollbars 
+                            ref="scrollbars" 
+                            renderTrackHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
+                            renderThumbHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
+                            renderView={props => <div {...props} style={{...props.style,overflowX: 'hidden',paddingBottom:'1em'}} />}
+                            style={{ height: '20em',width: '100%',margin:'1em 0px'}}
+                        >
+                         <Comment.Group style={{maxWidth: '98%'}}>
                             {
                                 this.props.chats.messages && _.map(this.props.chats.messages,(msg,key)=>{
-                                    return <Chatitem key={key} poster={msg.by} msg={msg.msg} time={msg.timestamp} />
+                                    return <Chatitem key={key} poster={msg.by} msg={msg.msg} time={msg.timestamp} me={this.props.auth.email === msg.by}/>
                                 })
                             }
-                        </Item.Group>
+                         </Comment.Group>
+                        </Scrollbars>
                         <Form reply>
                             <Form.TextArea value={this.state.msgBox} onChange={(e) => this.setState({ 'msgBox': e.target.value})} />
                             <Button content = 'ส่งข้อความ'

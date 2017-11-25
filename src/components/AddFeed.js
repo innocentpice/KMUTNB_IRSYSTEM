@@ -56,7 +56,7 @@ class AddFeed extends Component {
                   <Loader size='big'>กำลังบันทึก</Loader>
                 </Dimmer>
                 <Header as='h2' color='teal' textAlign='center'>
-                    Create TODO
+                    สร้างข่าวสาร / งาน
                 </Header>
                 <Segment stacked>
                     <Form.Field 
@@ -106,7 +106,7 @@ class AddFeed extends Component {
                             onChange={(date)=>this.setState({endDate: date})}
                         />
                     </Segment>
-                    <Button fluid type='submit' primary><Icon name="plus"/>ADD</Button>
+                    <Button fluid type='submit' primary><Icon name="plus"/>เพิ่ม</Button>
                 </Segment>
             </Form>
         );

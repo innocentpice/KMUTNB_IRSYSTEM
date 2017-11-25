@@ -50,7 +50,7 @@ export const chatSelect = (myKey, mateKey) => {
             }else{
                 dispatch({
                     type: CHAT_SELECTROOM,
-                    payload: RoomKey
+                    payload: {RoomKey,mateEmail}
                 })
                 const DBMSG = firebaseApp.database().ref('chatrooms/' + RoomKey + '/messages/');
                 DBMSG.on('value', snap => {

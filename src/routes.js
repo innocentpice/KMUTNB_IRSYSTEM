@@ -5,7 +5,6 @@ import AppPage from './containers/AppPage';
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
 
-
 class routes extends Component {
     render() {
         return (
@@ -13,7 +12,7 @@ class routes extends Component {
                 <div>
                     <Route exact path="/register" component={RegisterPage} />
                     <Route exact path="/login" component={LoginPage}/>
-                    <Route exact path="/" component={AppPage}/>
+                    <Route exact path="/*" component={AppPage}/>
                 </div>
             </BrowserRouter>
         );

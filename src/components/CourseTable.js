@@ -1,47 +1,147 @@
 import React, { Component } from 'react'
+import moment from 'moment';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import DayTimeTable from '../components/DayTimeTable';
+import CourseTableForm from '../components/CourseTableForm';
+
+import { getCourseAll } from '../actions';
+
+import { Dimmer, Loader, Modal} from 'semantic-ui-react'
 
 class CourseTable extends Component {
-    render() {
-        return (
+    
+    constructor(props){
+      super(props);
+      this.state = {
+        modal: false,
+      }
+      this.selectBoxHandler = this.selectBoxHandler.bind(this);
+    }
+    
+    selectBoxHandler(time,day,{text,key,duration,props = {style: ''}}){
+      
+      if(this.props.auth.email !== 'admin@admin.com'){
+        return false;
+      }
+      
+      const { backgroundColor } = props.style.backgroundColor ?  props.style : {backgroundColor: ''};
+      
+      const atStart = moment().hour(time);
+      let maxduration = moment().hour(19).diff(atStart,'h');
+      
+      this.props.coursetable[day].info.map(info=>{
+        const start = moment().hour((info.start).slice(0,2));
+        
+        if(atStart < start){
+          maxduration = maxduration > start.diff(atStart,'h') ? start.diff(atStart,'h') : maxduration;
+        }
+        return false;
+      });
+      this.setState({
+        modal: true,
+        boxKey: key,
+        time,day,text,maxduration,duration,color:backgroundColor
+      });
+    }
+    
+    componentDidMount(){
+      this.props.getCourseAll();
+    }
+    
+    render(){
+      var intervalMinutes = 60
+      var interval = moment.duration(intervalMinutes, 'minutes')
+      var min = moment('08:00', 'HH:mm')
+      var max = moment('19:00', 'HH:mm')
+  
+      function displayCell(xx) {
+        return xx.text
+      }
+      function calcHeight(xx) {
+        return moment(xx.end, 'HH:mm').diff(moment(xx.start, 'HH:mm')) / interval
+      }
+      function displayHeader(xx) {
+        return moment().day(xx.name).format("dddd")
+      }
+      
+      function isActive(xx, step) {
+        var current = moment(min).add(step * interval)
+        return moment(xx.start, 'HH:mm') <= current &&
+               current < moment(xx.end, 'HH:mm')
+      }
+      
+      function getBox(step){
+         var start = moment(min).add(interval * step)
+         return `${start.format('H')}`;
+      }
+      
+      function showTime(step) {
+        var start = moment(min).add(interval * step)
+        return `${start.format('LT')} น.`;
+      }
+      
+      function key(xx) {
+        return xx.key
+      }
+      const Check = () => {
+        if(this.props.coursetable[0]){
+          return(
             <div>
-                <table align="center" border="1" cellSpacing="0" cellPadding="3" bgcolor="#F1F1FD" style={{overflowX: 'scroll'}}>
-                    <tbody>
-                    <tr bgcolor="#EA98FF"><td><b>Day</b></td><td colSpan="4" width="60px"><b>8:00</b></td><td colSpan="4" width="60px"><b>9:00</b></td><td colSpan="4" width="60px"><b>10:00</b></td><td colSpan="4" width="60px"><b>11:00</b></td><td colSpan="4" width="60px"><b>12:00</b></td><td colSpan="4" width="60px"><b>13:00</b></td><td colSpan="4" width="60px"><b>14:00</b></td><td colSpan="4" width="60px"><b>15:00</b></td><td colSpan="4" width="60px"><b>16:00</b></td><td colSpan="4" width="60px"><b>17:00</b></td></tr>
-                    <tr><td bgcolor="#EA98FF" rowSpan="1" align="center"><b>M</b></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">S.14&nbsp;</td></tr><tr><td><font size="-2">57140214-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 507&nbsp;</font></td></tr></tbody></table></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">L.14&nbsp;</td></tr><tr><td><font size="-2">57140214-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 507&nbsp;</font></td></tr></tbody></table></td><td colSpan="24" height="50px">&nbsp;</td></tr>
-                    <tr><td bgcolor="#EA98FF" rowSpan="1" align="center"><b>T</b></td><td colSpan="40" height="50px">&nbsp;</td></tr>
-                    <tr><td bgcolor="#EA98FF" rowSpan="1" align="center"><b>W</b></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">S.10&nbsp;</td></tr><tr><td><font size="-2">57140314-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 604&nbsp;</font></td></tr></tbody></table></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">L.10&nbsp;</td></tr><tr><td><font size="-2">57140314-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 604&nbsp;</font></td></tr></tbody></table></td><td colSpan="4">&nbsp;</td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">S.12&nbsp;</td></tr><tr><td><font size="-2">57140314-2RC-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 602&nbsp;</font></td></tr></tbody></table></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213101&nbsp;</td><td valign="top" align="right">L.12&nbsp;</td></tr><tr><td><font size="-2">57140314-2RC-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 602&nbsp;</font></td></tr></tbody></table></td><td colSpan="4" height="50px">&nbsp;</td></tr>
-                    <tr><td bgcolor="#EA98FF" rowSpan="1" align="center"><b>H</b></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213204&nbsp;</td><td valign="top" align="right">S.1&nbsp;</td></tr><tr><td><font size="-2">57140214-3RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 505&nbsp;</font></td></tr></tbody></table></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213204&nbsp;</td><td valign="top" align="right">L.1&nbsp;</td></tr><tr><td><font size="-2">57140214-3RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 505&nbsp;</font></td></tr></tbody></table></td><td colSpan="24" height="50px">&nbsp;</td></tr>
-                    <tr><td bgcolor="#EA98FF" rowSpan="1" align="center"><b>F</b></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213202&nbsp;</td><td valign="top" align="right">S.1&nbsp;</td></tr><tr><td><font size="-2">57140214-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 505&nbsp;</font></td></tr></tbody></table></td><td colSpan="8" height="50px" bgcolor="#F4D9FF"><table width="100%"><tbody><tr><td valign="top">141213202&nbsp;</td><td valign="top" align="right">L.1&nbsp;</td></tr><tr><td><font size="-2">57140214-2RA-R&nbsp;</font></td><td align="right"><font size="-2">**21-BA 505&nbsp;</font></td></tr></tbody></table></td><td colSpan="24" height="50px">&nbsp;</td></tr>
-                    </tbody>
-                </table>
-                <hr style={{margin: '1.5em 0px'}}/>
-                <table border="0" cellPadding="3" cellSpacing="1">
-                    <tbody>
-                        <tr>
-                			<td><b>รหัสวิชา</b></td>
-                			<td><b>ชื่อวิชา</b></td>
-                			<td><b>หน่วยกิต(ชั่วโมง)</b></td>
-                		</tr>
-            			<tr>
-            				<td>141213101</td>
-            				<td>COMPUTER AND INFORMATION TEC</td>
-            				<td>3(2-2)</td>
-            			</tr>
-            			<tr>
-            				<td>141213204</td>
-            				<td>SYSTEMS ANALYSIS AND DESIGN</td>
-            				<td>3(2-2)</td>
-            			</tr>
-            			<tr>
-            				<td>141213202</td>
-            				<td>COMPUTER PROGRAMMING</td>
-            				<td>3(2-2)</td>
-            			</tr>
-                	</tbody>
-            	</table>
-	    </div>
-        );
+              { this.state.modal &&
+              <Modal
+                open={this.state.modal}
+                onClose={()=>{this.setState({modal: false})}}
+                header={
+                  moment().day(this.state.day).format("dddd") +
+                  ' เวลา ' +
+                  moment().hour(this.state.time).format('HH:00')
+                }
+                content={<CourseTableForm {...this.state} success={()=>this.setState({modal:false})}/>}
+                closeIcon
+              />}
+              <DayTimeTable
+                selectBoxHandler={this.selectBoxHandler}
+                getBox={getBox}
+                cellKey={key}
+                calcCellHeight={calcHeight}
+                showHeader={displayHeader}
+                showCell={displayCell}
+                showTime={showTime}
+                isActive={isActive}
+                max={max}
+                min={min}
+                data={this.props.coursetable}
+                rowNum={(max-min)/interval}
+                valueKey="info"
+              />
+            </div>
+          );
+        }else{
+          return(
+            <Dimmer active inverted style={{backgroundColor: '#fafafa',marginTop: '5%'}}>
+              <Loader inverted content='Loading' size='large' />
+            </Dimmer>
+          );
+        }
+      }
+      return(
+        <Check />
+      );
     }
 }
 
-export default CourseTable;
+
+CourseTable.propTypes = {
+    getCourseAll: PropTypes.func.isRequired,
+    addCourse: PropTypes.func.isRequired
+}
+
+function mapStateToProps({ coursetable }) {
+  return { coursetable }
+}
+
+export default connect(mapStateToProps, {
+  getCourseAll
+})(CourseTable);

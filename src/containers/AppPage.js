@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
 import { Grid } from 'semantic-ui-react';
 
 import { authCheck, authLogout, feedGetAll, feedDelete , getUsers } from '../actions';
@@ -58,7 +57,7 @@ class AppPage extends Component {
                             <ChatRoom auth={this.props.auth} users={this.props.users} />
                         </Route>
                         <Route exact path='CourseTable'>
-                            <CourseTable />
+                            <CourseTable auth={this.props.auth} />
                         </Route>
                         <Route exact path='Notification'>
                             <Notification />
