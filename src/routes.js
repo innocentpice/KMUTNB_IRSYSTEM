@@ -12,7 +12,7 @@ class routes extends Component {
                 <div>
                     <Route exact path="/register" component={RegisterPage} />
                     <Route exact path="/login" component={LoginPage}/>
-                    <Route exact path="/*" component={AppPage}/>
+                    <Route exact path="/" component={AppPage}/>
                 </div>
             </BrowserRouter>
         );

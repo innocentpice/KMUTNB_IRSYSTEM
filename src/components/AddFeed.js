@@ -6,10 +6,8 @@ import _ from 'lodash';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-import { Header, Button, Form, Input, TextArea, Segment, Icon, Select, Label, Dimmer, Loader} from 'semantic-ui-react'
-
-import { feedAdd } from '../actions'
+import { Header, Button, Form, Input, TextArea, Segment, Icon, Select, Label, Dimmer, Loader, Checkbox} from 'semantic-ui-react'
+import { feedAdd } from '../actions';
 
 class AddFeed extends Component {
 
@@ -22,12 +20,13 @@ class AddFeed extends Component {
             header: '',
             startDate: moment(),
             endDate: moment().add(1,'days'),
+            sendEmail: false,
             loading: false
         }
     }
     
     handleAddFeed = (newFeed) =>{
-        this.props.feedAdd(newFeed,this.props.auth.uid,this.props.goDashBoard)
+        this.props.feedAdd(newFeed,this.props.auth.uid,this.state.sendEmail,this.props.goDashBoard);
         this.setState({loading: true});
     }
 
@@ -93,10 +92,17 @@ class AddFeed extends Component {
                         placeholder='กรุณาเลือกผู้ใช้' 
                         search={true}
                         multiple={true}
-                        onChange={(e, { value }) => {
-                            this.setState({'sendTo': value});
+                        onChange={(e, obj) => {
+                            let value = [];
+                            _.map(obj.value,(key)=>{
+                                const item = _.find(obj.options, {key});
+                                value[key] = item.text;
+                                return false;
+                            });
+                            this.setState({'sendTo': {...value}});
                         }    
                     } />
+                    <Checkbox label='ส่ง Email' onChange={()=>{this.setState({sendEmail: !this.state.sendEmail});}} checked={this.state.sendEmail} />
                     <Segment textAlign='center'>
                         <Label attached='top'>กำหนดส่งงาน</Label>
                         <DatePicker

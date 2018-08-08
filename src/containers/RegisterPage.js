@@ -12,8 +12,11 @@ const gender = [
 ]
 
 const classRoom = [
-  { key: 'BCOM_RA', text: 'BCOM_RA', value: 'BCOM_RA' },
-  { key: 'BCOM_RB', text: 'BCOM_RB', value: 'BCOM_RB' }
+  { key: 'ACCOUNTING', text: 'ACCOUNTING', value: 'ACCOUNTING' },
+  { key: 'HUMANRESOURCE', text: 'HUMANRESOURCE', value: 'HUMANRESOURCE' },
+  { key: 'PRODUCTION', text: 'PRODUCTION', value: 'PRODUCTION' },
+  { key: 'IT', text: 'IT', value: 'IT' },
+  { key: 'MARKETING', text: 'MARKETING', value: 'MARKETING' }
 ]
 
 class RegisterPage extends Component {
@@ -153,9 +156,9 @@ class RegisterPage extends Component {
               />
               <Form.Field 
                 control={Select} 
-                label='Class' 
+                label='DEPARTMENT' 
                 options={classRoom} 
-                placeholder='Class' 
+                placeholder='DEPARTMENT' 
                 required 
                 onChange={(e, { value }) => {
                   this.setState({classroom: value});

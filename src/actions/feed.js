@@ -6,6 +6,7 @@ import {
 }
 from './type';
 import { firebaseApp } from '../firebase';
+import { sendEmail } from '../firebaseFunction';
 import _ from 'lodash';
 
 export const feedGetAll = (uid) => {
@@ -76,14 +77,17 @@ export const feedDelete = (uid,key) => {
     };
 }
 
-export const feedAdd = (newFeed,uid,callback=()=>{}) => {
+export const feedAdd = (newFeed,uid,sendEmailhandler = false,callback=()=>{}) => {
     function SendKey(feedKey,sendTo){
         firebaseApp.database().ref('users/' + uid + '/feedcard/' + feedKey + '/').update({ feedKey });
         
-        sendTo && sendTo.map(key=>{
+        sendTo && _.map(sendTo,(value,key)=>{
             const MyFeedDB = firebaseApp.database().ref('users/' + key + '/feedcard/' + feedKey + '/');
             MyFeedDB.update({ feedKey });
-            return true;
+            if(sendEmailhandler){
+                sendEmail(value,value);
+            }
+            return false;
         });
         callback();
     }

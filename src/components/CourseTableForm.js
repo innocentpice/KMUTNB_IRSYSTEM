@@ -38,7 +38,7 @@ class CourseTableForm extends Component {
     return(
       <Form style={{margin: '3em'}}>
         <Form.Group widths='equal'>
-          <Form.Input label='วิชา' placeholder='วิชา' value={this.state.text} onChange={(e,{value})=>this.setState({text:value})} />
+          <Form.Input label='หัวข้อ' placeholder='หัวข้อ' value={this.state.text} onChange={(e,{value})=>this.setState({text:value})} />
           { //<Form.Input label='ระยะเวลา (ชม.)' placeholder='ระยะเวลา' value={this.state.duration} onChange={(e,{value})=>this.setState({duration:value})}/>
           }
           <Form.Field 

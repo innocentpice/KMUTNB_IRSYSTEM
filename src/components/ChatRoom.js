@@ -5,14 +5,14 @@ import moment from 'moment';
 import { Scrollbars } from 'react-custom-scrollbars';
 import _ from 'lodash';
 
-import { Header, Divider, Form, Button, Select, Comment, Icon } from 'semantic-ui-react'
+import { Menu, Header, Form, Button, Comment, Icon, Dropdown, Divider, Grid, Image } from 'semantic-ui-react'
 
-import { chatSelect,chatPush } from '../actions';
+import { chatSelect, chatPush } from '../actions';
 
-const Chatitem = ({ poster, msg, time, me = false }) =>{
-    
-    if(me){
-        return(
+const Chatitem = ({ poster, msg, time, me = false }) => {
+
+    if (me) {
+        return (
             <Comment 
                 style={{
                     padding: '1em', 
@@ -31,11 +31,11 @@ const Chatitem = ({ poster, msg, time, me = false }) =>{
                 </Comment.Metadata>
                 <Comment.Text>{msg}</Comment.Text>
               </Comment.Content>
-            </Comment>    
+            </Comment>
         );
     }
-    
-    return(
+
+    return (
         <Comment 
             style={{
                 padding: '1em', 
@@ -66,6 +66,7 @@ class ChatRoom extends Component {
             messages: [],
             roomKey: '',
             msgBox: '',
+            activeUser: ''
         }
     }
 
@@ -77,6 +78,28 @@ class ChatRoom extends Component {
         const { scrollbars } = this.refs;
         scrollbars && scrollbars.scrollToBottom();
     }
+    
+    ListDD = () => {
+        return (
+            <Dropdown
+                fluid
+                search
+                selection
+                placeholder={this.props.chats.matename ? this.props.chats.matename : 'SELECT USER'}
+                options={
+                    _.filter(this.props.users, (n)=>{
+                        return n.key !== this.props.auth.uid;
+                    })
+                }
+                onChange={(e, { value}) => {
+                    const myKey = [this.props.auth.uid,this.props.auth.email];
+                    let mateKey = _.find(this.props.users,{'key':value});
+                    mateKey = [mateKey.key,mateKey.text];
+                    this.props.chatSelect(myKey,mateKey);
+                }}
+            />
+        );
+    }
 
     render() {
         return (
@@ -84,59 +107,77 @@ class ChatRoom extends Component {
                 <Header>
                     ChatRoom <Icon name='chat' />
                 </Header>
-                <Form>
-                    <Form.Field 
-                        control={Select} 
-                        label='Send To' 
-                        options={
-                            _.filter(this.props.users, (n)=>{
-                                return n.key !== this.props.auth.uid;
-                            })
-                        } 
-                        placeholder={this.props.chats.matename ? this.props.chats.matename : 'SELECT USER'} 
-                        required 
-                        search={true}
-                        onChange={(e, { value}) => {
-                            const myKey = [this.props.auth.uid,this.props.auth.email];
-                            let mateKey = _.find(this.props.users,{'key':value});
-                            mateKey = [mateKey.key,mateKey.text];
-                            this.props.chatSelect(myKey,mateKey);
-                        }    
-                    } />
-                </Form>
-                
-                <Divider />
-                {
-                    this.props.chats.roomkey &&
-                    <div>
-                        <Scrollbars 
-                            ref="scrollbars" 
+                <Divider/>
+                <Grid>
+                    <Grid.Column width={6}>
+                        <Scrollbars
                             renderTrackHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
                             renderThumbHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
                             renderView={props => <div {...props} style={{...props.style,overflowX: 'hidden',paddingBottom:'1em'}} />}
                             style={{ height: '20em',width: '100%',margin:'1em 0px'}}
                         >
-                         <Comment.Group style={{maxWidth: '98%'}}>
-                            {
-                                this.props.chats.messages && _.map(this.props.chats.messages,(msg,key)=>{
-                                    return <Chatitem key={key} poster={msg.by} msg={msg.msg} time={msg.timestamp} me={this.props.auth.email === msg.by}/>
-                                })
-                            }
-                         </Comment.Group>
+                            <Menu secondary vertical>
+                            {_.map(
+                            _.filter(this.props.users, (n)=>{
+                                return n.key !== this.props.auth.uid;
+                            }),
+                            (item)=>{
+                                return (
+                                    <Menu.Item
+                                        key={item.key}
+                                        name={item.key}
+                                        active={this.state.activeUser === item.key}
+                                        onClick={()=>{
+                                            const myKey = [this.props.auth.uid,this.props.auth.email];
+                                            const mateKey = [item.key,item.text];
+                                            this.props.chatSelect(myKey,mateKey);
+                                            this.setState({activeUser: item.key});
+                                        }}
+                                    >
+                                        <Header as='h5'>
+                                            <Image src={item.image.src} size='small' avatar="avatar" />
+                                            <span> {_.slice(item.text,0,15)}{item.text[16] && "..."}</span>
+                                        </Header>
+                                    </Menu.Item>
+                                );
+                            })}
+                            </Menu>
                         </Scrollbars>
-                        <Form reply>
-                            <Form.TextArea value={this.state.msgBox} onChange={(e) => this.setState({ 'msgBox': e.target.value})} />
-                            <Button content = 'ส่งข้อความ'
-                            labelPosition = 'left'
-                            icon = 'send'
-                            onClick={()=>{
-                                this.props.chatPush(this.props.auth.email,this.props.chats.roomkey,this.state.msgBox);
-                                this.setState({'msgBox': ''});
-                            }}
-                            primary / >
-                        </Form>
-                    </div>
-                }
+                    </Grid.Column>
+                    <Grid.Column width={10}>
+                        {
+                            this.props.chats.roomkey &&
+                            <div>
+                                <Scrollbars 
+                                    ref="scrollbars" 
+                                    renderTrackHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
+                                    renderThumbHorizontal={(props)=><span style={{display: 'none', visibility: 'hidden'}}/>} 
+                                    renderView={props => <div {...props} style={{...props.style,overflowX: 'hidden',paddingBottom:'1em'}} />}
+                                    style={{ height: '20em',width: '100%',margin:'1em 0px'}}
+                                >
+                                 <Comment.Group style={{maxWidth: '98%'}}>
+                                    {
+                                        this.props.chats.messages && _.map(this.props.chats.messages,(msg,key)=>{
+                                            return <Chatitem key={key} poster={msg.by} msg={msg.msg} time={msg.timestamp} me={this.props.auth.email === msg.by}/>
+                                        })
+                                    }
+                                 </Comment.Group>
+                                </Scrollbars>
+                                <Form reply>
+                                    <Form.Input value={this.state.msgBox} onChange={(e) => this.setState({ 'msgBox': e.target.value})} />
+                                    <Button content = 'ส่งข้อความ'
+                                    labelPosition = 'left'
+                                    icon = 'send'
+                                    onClick={()=>{
+                                        this.props.chatPush(this.props.auth.email,this.props.chats.roomkey,this.state.msgBox);
+                                        this.setState({'msgBox': ''});
+                                    }}
+                                    primary / >
+                                </Form>
+                            </div>
+                        }
+                    </Grid.Column>
+                </Grid>
             </div>
         );
     }
@@ -153,4 +194,4 @@ function mapStateToProps({ chats }) {
     return { chats }
 }
 
-export default connect(mapStateToProps, {chatSelect,chatPush})(ChatRoom);
+export default connect(mapStateToProps, { chatSelect, chatPush })(ChatRoom);

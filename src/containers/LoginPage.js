@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Button, Form, Grid, Header, Message, Segment, Image } from 'semantic-ui-react';
+import { Button, Form, Grid, Message, Segment, Image } from 'semantic-ui-react';
 
 import { authLogin, authCheck } from '../actions';
 
@@ -44,10 +44,7 @@ class LoginPage extends Component {
                   verticalAlign='middle'
                 >
                   <Grid.Column style={{ maxWidth: 450}}>
-                    <Image src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSu-7JAyKxAXEjVOVmNFD6bXIJEr9enAQhXL3ho_7n_X08wJlaQ' size='medium' shape='circular' centered/>
-                    <Header as='h2' color='teal' textAlign='center'>
-                        BCOM IR-SYSTEM
-                    </Header>
+                    <Image src='./LOGO.jpg' size='medium' shape='circular' centered/>
                     {this.props.auth.error && <Message size='small'>{this.props.auth.error}</Message>}
                     <Form size='large'>
                       <Segment stacked>

@@ -19,25 +19,31 @@ class WorkTimeProgress extends Component {
         }
         this.setWorkTime = this.setWorkTime.bind(this);
     }
+    
     setWorkTime(){
         const workTime = moment(this.props.feed.deadline).diff(moment(this.props.feed.timestamp), 'second');
         const workRunTime = moment(moment()).diff(this.props.feed.timestamp, 'second');
         const haveTime = workTime - workRunTime;
         const percent = (workTime - haveTime) / workTime * 100;
-        this.setState({
-            workTimePercent: percent,
-            runTrick: this.state.complete || percent>=100 ? null : setTimeout(this.setWorkTime,1000)
-        });
+        if(workTime){
+            this.setState({
+                workTimePercent: percent,
+                runTrick: this.state.complete || percent>=100 ? null : setTimeout(this.setWorkTime,2000)
+            });
+        }
     }
+    
     componentDidMount(){
         this.setWorkTime();
     }
+    
     componentWillUnmount(){
         this.setState({
             complete: true,
             runTrick: null
         });
     }
+    
     render(){
         return(
             <Progress 
@@ -82,6 +88,26 @@ class FeedCard extends Component {
                 sameElse: 'llll',
             }
             
+            const onConfirmhander = () => {
+                this.props.DelFeed(this.props.uid,{'key': feed.key,'sendTo':feed.sendTo});
+            }
+            
+            const onCancelhander = () => {
+                this.setState({openDelete: false})
+            }
+            
+            const EditBtnhandler = () => {
+                this.setState({edit: true});
+            }
+            
+            const DeleteBtnhandler = () => {
+                this.setState({openDelete: true});
+            }
+            
+            const onAccepthandler = () => {
+                this.props.feedAccept(this.props.uid,feed.key);
+            }
+            
             return (
                     <Card fluid key={feed.key}>
                         <WorkTimeProgress feed={feed} />
@@ -118,19 +144,19 @@ class FeedCard extends Component {
                             <div className='ui two buttons'>
                                 <Confirm
                                   open={this.state.openDelete}
-                                  onCancel={()=>this.setState({openDelete: false})}
-                                  onConfirm={()=>{this.props.DelFeed(this.props.uid,{'key': feed.key,'sendTo':feed.sendTo});}}
+                                  onCancel={onCancelhander}
+                                  onConfirm={onConfirmhander}
                                 />
                                 <Button basic icon color='red'
-                                    onClick={()=>this.setState({openDelete: true})}
+                                    onClick={DeleteBtnhandler}
                                 ><Icon name='trash'/> Delete</Button>
-                                <Button basic icon color='blue' onClick={()=>{this.setState({edit: true})}}><Icon name='edit'/> Edit</Button>
+                                <Button basic icon color='blue' onClick={EditBtnhandler}><Icon name='edit'/> Edit</Button>
                             </div>    
                         }
                         {
                             feed.poster !== this.props.myEmail && 
                             <div className='ui two buttons'>
-                                { Accpeted && <Button basic icon color='green' onClick={()=>{this.props.feedAccept(this.props.uid,feed.key)}}><Icon name='save' /> Accpet</Button>}
+                                { Accpeted && <Button basic icon color='green' onClick={onAccepthandler}><Icon name='save' /> Accpet</Button>}
                                 { !Accpeted && <Button disabled icon color='blue'><Icon name='save' /> Accpeted</Button>}
                             </div>    
                         }
@@ -139,9 +165,13 @@ class FeedCard extends Component {
             );
         }
         
-        const Route = ({feed})=>{
+        const Route = ({feed}) => {
+            const editCancel = () => {
+                this.setState({edit:false});
+            }
+            
             if(this.state.edit){
-                return <EditFeed feed={feed} myEmail={this.props.myEmail} DelFeed={this.props.DelFeed} uid={this.props.uid} handleCancel={()=>this.setState({edit:false})} />
+                return <EditFeed feed={feed} myEmail={this.props.myEmail} DelFeed={this.props.DelFeed} uid={this.props.uid} handleCancel={editCancel} />
             }else{
                 return <DefFeed feed={feed} />
             }

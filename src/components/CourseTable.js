@@ -8,7 +8,7 @@ import CourseTableForm from '../components/CourseTableForm';
 
 import { getCourseAll } from '../actions';
 
-import { Dimmer, Loader, Modal} from 'semantic-ui-react'
+import { Dimmer, Loader, Modal, Header} from 'semantic-ui-react'
 
 class CourseTable extends Component {
     
@@ -89,6 +89,7 @@ class CourseTable extends Component {
         if(this.props.coursetable[0]){
           return(
             <div>
+              <Header size='huge' textAlign='center'>ตารางการประชุม</Header>
               { this.state.modal &&
               <Modal
                 open={this.state.modal}

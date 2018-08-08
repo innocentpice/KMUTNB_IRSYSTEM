@@ -1,6 +1,6 @@
 {
-  "short_name": "BCOM IR-SYSTEM",
-  "name": "BCOM IR-SYSTEM",
+  "short_name": "BCOM ENTERPRISE",
+  "name": "BCOM ENTERPRISE",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,9 +8,10 @@
       "type": "image/x-icon"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#fafafa",
-  "background_color": "#fafafa"
+  "background_color": "#fafafa",
+  "gcm_sender_id": "103953800507"
 }
