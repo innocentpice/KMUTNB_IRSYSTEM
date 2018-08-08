@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import Markdown from "react-markdown";
 import _ from 'lodash';
 
 import { Card, Icon, Button, Progress, Image, Confirm } from 'semantic-ui-react';
@@ -124,7 +125,7 @@ class FeedCard extends Component {
                             โดย:&nbsp;{feed.poster}<br/>
                         </Card.Meta>
                       </Card.Content>
-                      <Card.Content description={feed.description} />
+                      <Card.Content description={<Markdown source={feed.description} escapeHtml/>}/>
                       {lengthSD !==0 && 
                         <Card.Content extra>
                             <Progress 

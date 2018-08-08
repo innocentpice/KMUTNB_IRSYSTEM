@@ -75,6 +75,8 @@ class AddFeed extends Component {
                         label='รายละเอียดงาน' 
                         placeholder='รายละเอียดงาน' 
                         required 
+                        autoHeight
+                        style={{ minHeight: 100 }}
                         value={this.state.desctiption}
                         onChange={(e)=>{
                             this.setState({

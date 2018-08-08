@@ -51,6 +51,8 @@ class EditFeed extends Component {
                 <Form.Field 
                     control={TextArea}
                     required 
+                    autoHeight
+                    style={{ minHeight: 100 }}
                     value={description}
                     onChange={(e, { value })=>{
                         this.setState({description:value})
